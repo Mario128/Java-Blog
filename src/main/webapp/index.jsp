@@ -12,27 +12,17 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 </head>
-<body>
-<div style="margin-left:10%;margin-right:50%;margin-top:10%;">
+<body style="margin-left:10%;margin-right:50%;margin-top:5%;">
+
     <p style="font-size:30px;">Login:</p>
-    <%
-        String msg=(String)request.getAttribute("meldung");
-        if(msg!=null){
-            out.append("<p style='color:red;'>"+msg+"</p>");
-        }
-    %>
-    <form method="post" action="/login">
-        Name: 		<input type="text" class="form-control" name="user"><br>
-        Passwort: 	<input type="password" class="form-control" name="pwd"><br>
-        <button class="btn btn-primary" type="submit">Senden</button>
-    </form>
+    <%@include file="Login/login.jsp"%>
     <br>
     <p style="font-size:30px;">Register:</p>
-    <form method="post" action="/register">
-        Name: 		<input type="text" class="form-control" name="user"><br>
-        Passwort: 	<input type="password" class="form-control" name="pwd"><br>
-        <button class="btn btn-primary" type="submit">Senden</button>
-    </form>
-</div>
+    <%@include file="Registration/registration.jsp"%>
+
+<script src="Login/login.js" type="text/javascript"></script>
+<script src="Registration/registration.js" type="text/javascript"></script>
+
+
 </body>
 </html>

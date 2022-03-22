@@ -19,8 +19,10 @@
 <div class="container-fluid">
   <div class="row">
     <div class="col-sm-3" style="background-color:lavender;">
-      <p>
-        Willkommen
+      <br>
+      <br>
+      <h5>
+        Welcome
         <%
           String usr = (String) request.getAttribute("benutzer");
           out.println(usr);
@@ -28,9 +30,10 @@
           Main db = new Main();
           c = db.getCategories(DBManager.getInstance().getConnection());
         %>
-      </p>
+      </h5>
       <br>
       <br>
+      <h5>Available Categories:</h5>
       <%
         for (Category ca : c) {
           out.print("<button class='btn' type='button' onclick='AddBlog("+ca.getCategory_id()+")'>"+ca.getCat_name()+"</button>");
@@ -40,10 +43,14 @@
       %>
       <br>
       <br>
-      <button class="btn btn-primary" type="button" onclick="WriteBlog()">Add a Blog</button>
+      <div id="Blogname"></div>
       <div id="Blogliste"></div>
+      <br>
+      <button class="btn btn-primary" type="button" onclick="WriteBlog()">Add a Blog</button>
     </div>
     <div class="col-sm-9" style="background-color:lavenderblush;">
+      <br>
+      <br>
       <div id="WriteBlog"></div>
       <div id="Blogcontent"></div>
     </div>
@@ -66,22 +73,22 @@
 
   function RemoveBlog(){
     document.getElementById('Blogcontent').innerHTML="";
-    HideComments();
   }
   function HideWrite(){
     document.getElementById('WriteBlog').innerHTML="";
   }
   function ArtikelArrayFormatieren(arr){
-    console.log(arr)
     var len, text, i , elem;
     len=arr.length;
-    //blogliste=arr;
+    blogliste=arr;
     text="<dl>";
     for(i =0;i<len;i++){
       elem=arr[i];
       console.log("header nr" +i+ elem.header)
-      text+="<dt>"+elem.header+"</dt><br>";
+      text+="<dt onclick='BlogAnzeigen("+i+")' class='btn'>"+elem.header+"</dt><br>";
       //text+="<dt id='B"+i+"'></dt><br>";
+      document.getElementById('Blogname').innerHTML="<h5>Available Blogs</h5>";
+
     }
     text+="</dl>";
     return text;
@@ -92,14 +99,31 @@
     xhttp.onreadystatechange=function(){
       if(this.readyState==4 && this.status==200){
         var arr = JSON.parse(this.responseText);
-        console.log("parsed array:" + arr);
         var htmlcode=ArtikelArrayFormatieren(arr);
         document.getElementById('Blogliste').innerHTML=htmlcode;
       }
     };
-    xhttp.open("POST","GetBlogs",false);
+    xhttp.open("POST","GetBlogs",true);
     xhttp.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
     xhttp.send("themenId="+themenId);
+  }
+
+  function BlogAnzeigen(index){
+    HideWrite();
+    var xhttp=new XMLHttpRequest();
+    var blog=blogliste[index];
+    xhttp.onreadystatechange=function(){
+      if(this.readyState==4 && this.status==200){
+        var text="<br><dt>"+blog.header+"</dt><br><br>";
+        text+="<dt>"+blog.content+"</dt><br>";
+        text+="<dt>Created by " + this.responseText+"</dt>";
+        text+="<dt onclick='RemoveBlog()' class='btn btn-primary'>Hide Blog</dt>";
+        document.getElementById('Blogcontent').innerHTML=text;
+      }
+    };
+    xhttp.open("POST","GetUser",true);
+    xhttp.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+    xhttp.send("userId="+blog.user_id);
   }
 </script>
 </body>

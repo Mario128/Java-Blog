@@ -38,14 +38,19 @@ public class F1 implements Filter {
         HttpSession session = req.getSession(false);
         String requestPath = req.getRequestURI();
         System.out.println("request path:" + requestPath);
-        if (requestPath.equals("/login") || requestPath.equals("/") || requestPath.equals("/register") || requestPath.equals("/index.jsp") || session != null && session.getAttribute("benutzer") != null) { // change "user" for the session attribute you have defined
-
-            chain.doFilter(req, res); // Logged-in user found, so just continue request.
+        if (requestPath.contains("/login")
+                || requestPath.contains("/registration")
+                || requestPath.equals("/")
+                || requestPath.equals("/register")
+                || requestPath.equals("/index.jsp")
+                || session != null && session.getAttribute("benutzer") != null)
+        {
+            chain.doFilter(req, res);
 
         } else {
             // No logged-in user found, so redirect to login page.
+            System.out.println("unallowed access request");
             res.sendRedirect("index.jsp");
         }
-        //chain.doFilter(request, response);
     }
 }

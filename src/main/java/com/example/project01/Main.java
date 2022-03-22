@@ -10,17 +10,33 @@ import java.util.ArrayList;
 
 public class Main {
 
-    public void addUser(Connection con, String username, String password) {
+    public boolean addUser(Connection con, Person p) throws SQLException {
+        boolean success = false;
+        String insert = "insert into users (username, password, firstname, isadmin, email)" +
+                "values (?, ?, ?, false, ?)";
+        PreparedStatement stm = null;
+
         try {
-            String inserString = "INSERT INTO users (username, password) VALUES (?,?);";
-            PreparedStatement updateUsers = con.prepareStatement(inserString);
-            updateUsers.setString(1, username);
-            updateUsers.setString(2, password);
-            updateUsers.executeUpdate();
-        } catch (SQLException e) {
-            // TODO Auto-generated catch block
+            stm = con.prepareStatement(insert);
+            stm.setString(1, p.getUsername());
+            stm.setString(2, p.getPassword());
+            stm.setString(3, p.getFirstname());
+            stm.setString(4, p.getEmail());
+
+            int anz = stm.executeUpdate();
+            if (anz == 1) {
+                success = true;
+            }
+        } catch(SQLException e)
+        {
             e.printStackTrace();
+        }finally
+        {
+            if(stm != null) {
+                stm.close();
+            }
         }
+        return success;
     }
 
     public void addCategory(Connection con, String catname) {
@@ -212,6 +228,30 @@ public class Main {
             c.add(this.getCategory(con, resultset.getInt("category_id")));
         }
         return c;
+    }
+    public boolean checkDoubleUsername(Connection con, String usr) throws SQLException {
+        PreparedStatement st = con.prepareStatement("Select * from users where username = ?");
+        st.setString(1, usr);
+        ResultSet rs = st.executeQuery();
+
+        if(rs.next()) {
+            return false;
+        }
+        else{
+            return true;
+        }
+    }
+    public boolean checkDoubleEmail(Connection con, String email) throws SQLException {
+        PreparedStatement st = con.prepareStatement("Select * from users where email = ?");
+        st.setString(1, email);
+        ResultSet rs = st.executeQuery();
+
+        if(rs.next()) {
+            return false;
+        }
+        else{
+            return true;
+        }
     }
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
        /*
